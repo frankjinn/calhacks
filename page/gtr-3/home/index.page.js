@@ -26,25 +26,27 @@ Page({
       })
     }
 
+    // const tap = hmUI.createWidget(hmUI.widget.TEXT_LEVEL, {
+    //   ...CARD_DISPLAY,
+    //   level: 2
+    //   })
+    // tap.setProperty(hmUI.prop.VISIBLE, false)  
+
     // this.state.addButton = hmUI.createWidget(hmUI.widget.BUTTON, {
     //   ...ADD_BUTTON,
     //   click_func: () => {
-    //     //this.addRandomTodoItem()
-
+    //     tap.setProperty(hmUI.prop.VISIBLE, true)
+        
     //   }
     // })
 
-    const tap = hmUI.createWidget(hmUI.widget.TEXT, {
-      ...CARD_DISPLAY
-      })
-    tap.setProperty(hmUI.prop.VISIBLE, false)  
 
-    this.state.tapbutton = hmUI.createWidget(hmUI.widget.BUTTON, {
-        ...TAP_BUTTON,
-        click_func: () => {
-          tap.setProperty(hmUI,prop.VISIBLE, true)
-        }
-    })
+    // this.state.tapbutton = hmUI.createWidget(hmUI.widget.BUTTON, {
+    //     ...TAP_BUTTON,
+    //     click_func: () => {
+    //       tap.setProperty(hmUI,prop.VISIBLE, true)
+    //     }
+    // })
     
     this.createAndUpdateList()
     

@@ -16,13 +16,13 @@ export const TITLE_TEXT_STYLE = {
 }
 
 export const ADD_BUTTON = {
-  text: getText('add'),
+  text: getText('.'),
   x: px(30),
   y: px(65),
   w: px(120),
   h: px(50),
-  normal_color: 0xfc6950,
-  press_color: 0xfeb4a8,
+  normal_color: 0x000000,
+  press_color: 0x000000,
   radius: px(12)
 }
 
@@ -38,13 +38,14 @@ export const TAP_BUTTON = {
 
 export const CARD_DISPLAY = {
   text: getText('flipped word'),
-  x: px(15),
-  y: px(120),
+  x: px(200),
+  y: px(200),
   w: px(300),
   h: px(300),
-  normal_color: 0x43529D,
+  normal_color: 0xffffff,
   press_color: 0x43529D,
-  radius: px(12),
+  radius: px(50),
+  show_level: hmUI.show_level.ONLY_NORMAL
 }
 
 export const TIPS_TEXT_STYLE = {
