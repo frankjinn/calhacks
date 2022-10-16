@@ -45,7 +45,6 @@ export const CARD_DISPLAY = {
   normal_color: 0xffffff,
   press_color: 0x43529D,
   radius: px(50),
-  show_level: hmUI.show_level.ONLY_NORMAL
 }
 
 export const TIPS_TEXT_STYLE = {
@@ -77,9 +76,8 @@ export const SCROLL_LIST = {
           h: px(250),
           key: 'name',
           color: 0xffffff,
-          text_size: px(60),
+          text_size: px(40),
           align_h: hmUI.align.CENTER,
-          text_style: hmUI.text_style.WRAP
         },
       ],
       text_view_count: 1,
