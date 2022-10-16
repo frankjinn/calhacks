@@ -1,5 +1,5 @@
-msgid "addTodo"
-msgstr "ADD TODO"
+msgid "addDeck"
+msgstr "ADD DECK"
 
 msgid "delete"
 msgstr "DELETE"

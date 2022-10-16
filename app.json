@@ -7,10 +7,10 @@
       "name": "1.0.0"
     },
     "appId": 20001,
-    "appName": "Todo List",
+    "appName": "Mem:re",
     "icon": "icon.png",
     "vender": "zepp",
-    "description": "todo list application"
+    "description": "Flashcard application"
   },
   "runtime": {
     "apiVersion": {

@@ -43,7 +43,7 @@ AppSettingsPage({
           fontSize: '12px',
           lineHeight: '30px',
           borderRadius: '30px',
-          background: '#409EFF',
+          background: '#656565',
           color: 'white',
           textAlign: 'center',
           padding: '0 15px',
@@ -52,7 +52,7 @@ AppSettingsPage({
       },
       [
         TextInput({
-          label: gettext('addTodo'),
+          label: gettext('addDeck'),
           onChange: (val) => {
             this.addTodoList(val)
           },
