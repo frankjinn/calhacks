@@ -2,37 +2,37 @@ import { gettext } from 'i18n'
 import { DEFAULT_DECK_LIST } from './../utils/constants'
 AppSettingsPage({
   state: {
-    todoList: [],
+    deckList: [],
     props: {},
   },
-  addTodoList(val) {
-    this.state.todoList = [...this.state.todoList, val]
+  addDeckList(val) {
+    this.state.deckList = [...this.state.deckList, val]
     this.setItem()
   },
-  editTodoList(val, index) {
-    this.state.todoList[index] = val
+  editDeckList(val, index) {
+    this.state.deckList[index] = val
     this.setItem()
   },
-  deleteTodoList(index) {
-    this.state.todoList = this.state.todoList.filter((_, ind) => {
+  deleteDeckList(index) {
+    this.state.deckList = this.state.deckList.filter((_, ind) => {
       return ind !== index
     })
     this.setItem()
   },
   setItem() {
-    const newString = JSON.stringify(this.state.todoList)
-    this.state.props.settingsStorage.setItem('todoList', newString)
+    const newString = JSON.stringify(this.state.deckList)
+    this.state.props.settingsStorage.setItem('deckList', newString)
   },
   setState(props) {
     this.state.props = props
-    if (props.settingsStorage.getItem('todoList')) {
-      this.state.todoList = JSON.parse(
-        props.settingsStorage.getItem('todoList'),
+    if (props.settingsStorage.getItem('deckList')) {
+      this.state.deckList = JSON.parse(
+        props.settingsStorage.getItem('deckList'),
       )
     } else {
-      this.state.todoList = [...DEFAULT_DECK_LIST]
+      this.state.deckList = [...DEFAULT_DECK_LIST]
     }
-    console.log('todoList: ', this.state.todoList)
+    console.log('deckList: ', this.state.deckList)
   },
   build(props) {
     this.setState(props)
@@ -54,12 +54,12 @@ AppSettingsPage({
         TextInput({
           label: gettext('addDeck'),
           onChange: (val) => {
-            this.addTodoList(val)
+            this.addDeckList(val)
           },
         }),
       ],
     )
-    this.state.todoList.forEach((item, index) => {
+    this.state.deckList.forEach((item, index) => {
       contentItems.push(
         View(
           {
@@ -94,16 +94,16 @@ AppSettingsPage({
                   maxLength: 200,
                   onChange: (val) => {
                     if (val.length > 0 && val.length <= 200) {
-                      this.editTodoList(val, index)
+                      this.editDeckList(val, index)
                     } else {
-                      console.log("todoList can't be empty or too long!")
+                      console.log("deckList can't be empty or too long!")
                     }
                   },
                 }),
               ],
             ),
             Button({
-              label: gettext('delete'),
+              label: gettext('GoToDeck'),
               style: {
                 fontSize: '12px',
                 borderRadius: '30px',
@@ -111,7 +111,19 @@ AppSettingsPage({
                 color: 'white',
               },
               onClick: () => {
-                this.deleteTodoList(index)
+                this.deleteDeckList(index)
+              },
+            }),
+            Button({
+              label: gettext('-'),
+              style: {
+                fontSize: '12px',
+                borderRadius: '30px',
+                background: '#D85E33',
+                color: 'white',
+              },
+              onClick: () => {
+                this.deleteDeckList(index)
               },
             }),
           ],
