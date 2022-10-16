@@ -22,14 +22,14 @@ AppSideService({
         ctx.response({
           data: { result: getTodoList() },
         })
-      // } else if (payload.method === 'ADD') {
-      //   const todoList = getTodoList()
-      //   const newTodoList = [...todoList, ]
-      //   settings.settingsStorage.setItem('todoList', JSON.stringify(newTodoList))
+      } else if (payload.method === 'ADD') {
+        const todoList = getTodoList()
+        const newTodoList = [...todoList, ]
+        settings.settingsStorage.setItem('todoList', JSON.stringify(newTodoList))
 
-      //   ctx.response({
-      //     data: { result: newTodoList },
-      //   })
+        ctx.response({
+          data: { result: newTodoList },
+        })
       } else if (payload.method === 'DELETE') {
         const { params: { index } = {} } = payload
         const todoList = getTodoList()
