@@ -35,7 +35,7 @@ export function bin2buf(bin) {
 }
 
 export function buf2bin(buf) {
-  return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)
+  return buf.buffer
 }
 
 export function buf2hex(buf) {

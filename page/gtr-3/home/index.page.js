@@ -1,12 +1,8 @@
-import * as hmUI from '@zos/ui'
-import { getDeviceInfo, SCREEN_SHAPE_SQUARE } from '@zos/device'
-import { log as Logger } from '@zos/utils'
-
 import { TITLE_TEXT_STYLE, TIPS_TEXT_STYLE, SCROLL_LIST, ADD_BUTTON } from './index.style'
-import { readFileSync, writeFileSync } from './../../utils/fs'
-import { getScrollListDataConfig } from './../../utils/index'
+import { readFileSync, writeFileSync } from './../../../utils/fs'
+import { getScrollListDataConfig } from './../../../utils/index'
 
-const logger = Logger.getLogger('todo-list-page')
+const logger = DeviceRuntimeCore.HmLogger.getLogger('todo-list-page')
 const { messageBuilder } = getApp()._options.globalData
 
 Page({
@@ -24,12 +20,11 @@ Page({
   },
   build() {
     logger.debug('page build invoked')
-
-    if (getDeviceInfo().screenShape !== SCREEN_SHAPE_SQUARE) {
+    if (hmSetting.getDeviceInfo().screenShape !== 0) {
       this.state.title = hmUI.createWidget(hmUI.widget.TEXT, {
         ...TITLE_TEXT_STYLE
       })
-    } 
+    }
 
     this.state.addButton = hmUI.createWidget(hmUI.widget.BUTTON, {
       ...ADD_BUTTON,
