@@ -1,12 +1,27 @@
-import { EventBus } from '@zos/utils'
-import { log as Logger } from '@zos/utils'
-import { Deferred, timeout } from './defer'
-import { json2buf, buf2json, bin2hex, str2buf, buf2str } from './data'
+import './buffer'
+import './logger'
+import {
+  EventBus
+} from './event'
+import {
+  Deferred,
+  timeout
+} from './defer'
+import {
+  json2buf,
+  buf2json,
+  bin2hex,
+  str2buf
+} from './data'
+import {
+  isHmBleDefined,
+  isHmAppDefined
+} from './js-module'
 
 let logger
 
 function initLogger() {
-  if (typeof __ZEPPOS__ !== 'undefined') {
+  if (isHmAppDefined()) {
     logger = Logger.getLogger('device-message')
     // logger.level = logger.levels.warn
   } else {
@@ -14,7 +29,7 @@ function initLogger() {
   }
 }
 
-const DEBUG = true
+const DEBUG = false
 
 export const MESSAGE_SIZE = 3600
 export const MESSAGE_HEADER = 16
@@ -24,7 +39,7 @@ export const HM_MESSAGE_PROTO_PAYLOAD = MESSAGE_PAYLOAD - HM_MESSAGE_PROTO_HEADE
 
 export const MessageFlag = {
   Runtime: 0x0,
-  App: 0x1
+  App: 0x1,
 }
 
 export const MessageType = {
@@ -33,46 +48,50 @@ export const MessageType = {
   Heart: 0x3,
   Data: 0x4,
   DataWithSystemTool: 0x5,
-  Log: 0x6
+  Log: 0x6,
 }
 
 export const MessageRuntimeType = {
   Invoke: 0x1
 }
 export const MessageVersion = {
-  Version1: 0x1
+  Version1: 0x1,
 }
 
 export const MessagePayloadType = {
   Request: 0x1,
   Response: 0x2,
-  Notify: 0x3
+  Notify: 0x3,
 }
 
 export const DataType = {
   empty: 'empty',
   json: 'json',
   text: 'text',
-  bin: 'bin'
+  bin: 'bin',
 }
 
 export const MessagePayloadDataTypeOp = {
   EMPTY: 0x0,
   TEXT: 0x1,
   JSON: 0x2,
-  BIN: 0x3
+  BIN: 0x3,
 }
 
 export function getDataType(type) {
   switch (type.toLowerCase()) {
     case DataType.json:
       return MessagePayloadDataTypeOp.JSON
+      break;
     case DataType.text:
       return MessagePayloadDataTypeOp.TEXT
+      break;
     case DataType.bin:
       return MessagePayloadDataTypeOp.BIN
+      break;
     case DataType.empty:
       return MessagePayloadDataTypeOp.EMPTY
+      break;
     default:
       return MessagePayloadDataTypeOp.TEXT
   }
@@ -81,7 +100,7 @@ export function getDataType(type) {
 // 中续，结束
 export const MessagePayloadOpCode = {
   Continued: 0x0,
-  Finished: 0x1
+  Finished: 0x1,
 }
 
 let traceId = 10000
@@ -96,6 +115,45 @@ export function genSpanId() {
 
 export function getTimestamp(t = Date.now()) {
   return t % 10000000
+}
+
+class InvokeAppProto {
+  constructor(messageBuilder) {
+    this.messageBuilder = messageBuilder
+  }
+
+  encode(obj) {
+    const payload = json2buf(obj)
+    return this.buildBin(payload)
+  }
+
+  decode(bin) {
+    const message = this.readBin(bin)
+    return bin2json(message.payload)
+  }
+
+  isInvokeProto(flag, version, type) {
+    return flag === MessageFlag.Runtime && type === MessageRuntimeType.Invoke
+  }
+
+  buildBin(payload, opts = {}) {
+    // opts 覆盖头部选项
+    return this.messageBuilder.buildBin({
+      flag: MessageFlag.Runtime,
+      version: MessageVersion.Version1,
+      type: MessageRuntimeType.Invoke,
+      port1: 0,
+      port2: 0,
+      appId: this.messageBuilder.appId,
+      extra: 0,
+      ...opts,
+      payload,
+    })
+  }
+
+  readBin(bin) {
+    return this.messageBuilder.readBin(bin)
+  }
 }
 
 class Session extends EventBus {
@@ -130,7 +188,7 @@ class Session extends EventBus {
     if (this.count !== this.chunks.length) return
 
     for (let i = 1; i <= this.count; i++) {
-      const chunk = this.chunks.find((c) => c.seqId === i)
+      const chunk = this.chunks.find(c => c.seqId === i)
 
       if (!chunk) {
         this.releaseBuf()
@@ -188,21 +246,17 @@ class SessionMgr {
   }
 
   has(id, type) {
-    return this.sessions.has(
-      this.key({
-        id,
-        type
-      })
-    )
+    return this.sessions.has(this.key({
+      id,
+      type
+    }))
   }
 
   getById(id, type) {
-    return this.sessions.get(
-      this.key({
-        id,
-        type
-      })
-    )
+    return this.sessions.get(this.key({
+      id,
+      type
+    }))
   }
 
   clear() {
@@ -210,18 +264,22 @@ class SessionMgr {
   }
 }
 
+
 export class MessageBuilder extends EventBus {
-  constructor(
-    { appId = 0, appDevicePort = 20, appSidePort = 0, ble = undefined } = {
+  constructor({
+    appId = 0,
+    appDevicePort = 20,
+    appSidePort = 0,
+    ble = isHmBleDefined() ? hmBle : undefined
+  } = {
       appId: 0,
       appDevicePort: 20,
       appSidePort: 0,
-      ble: undefined
-    }
-  ) {
+      ble: isHmBleDefined() ? hmBle : undefined
+    },) {
     super()
     initLogger()
-    this.isDevice = typeof __ZEPPOS__ !== 'undefined'
+    this.isDevice = isHmBleDefined()
     this.isSide = !this.isDevice
 
     this.appId = appId
@@ -234,6 +292,14 @@ export class MessageBuilder extends EventBus {
     this.shakeTask = Deferred()
     this.waitingShakePromise = this.shakeTask.promise
     this.sessionMgr = new SessionMgr()
+
+    if (isHmAppDefined() && DEBUG) {
+      logger.connect({
+        log: (logEvent) => {
+          this.log(JSON.stringify(logEvent))
+        }
+      })
+    }
   }
 
   getMessageSize() {
@@ -253,7 +319,7 @@ export class MessageBuilder extends EventBus {
   }
 
   json2Buf(json) {
-    return json2buf(json)
+    return json2buf(buf)
   }
 
   now(t = Date.now()) {
@@ -285,10 +351,6 @@ export class MessageBuilder extends EventBus {
   }
 
   listen(cb) {
-    if (typeof messaging === 'undefined') {
-      return
-    }
-
     messaging &&
       messaging.peerSocket.addListener('message', (message) => {
         DEBUG && logger.warn('[RAW] [R] receive size=>%d bin=>%s', message.byteLength, bin2hex(message))
@@ -343,7 +405,7 @@ export class MessageBuilder extends EventBus {
       port2: this.appSidePort,
       appId: this.appId,
       extra: 0,
-      payload: Buffer.from([this.appId])
+      payload: Buffer.from([this.appId]),
     })
   }
 
@@ -363,7 +425,7 @@ export class MessageBuilder extends EventBus {
       port2: this.appSidePort,
       appId: this.appId,
       extra: 0,
-      payload: Buffer.from([this.appId])
+      payload: Buffer.from([this.appId]),
     })
   }
 
@@ -410,7 +472,7 @@ export class MessageBuilder extends EventBus {
       port2,
       appId,
       extra,
-      payload
+      payload,
     }
   }
 
@@ -425,7 +487,7 @@ export class MessageBuilder extends EventBus {
       appId: this.appId,
       extra: 0,
       ...opts,
-      payload
+      payload,
     })
   }
 
@@ -459,7 +521,15 @@ export class MessageBuilder extends EventBus {
   }
 
   // 大数据的复杂头部分包协议
-  sendHmProtocol({ requestId, dataBin, type, contentType, dataType }, { messageType = MessageType.Data } = {}) {
+  sendHmProtocol({
+    requestId,
+    dataBin,
+    type,
+    contentType,
+    dataType
+  }, {
+    messageType = MessageType.Data
+  } = {}) {
     const headerSize = 0
     const hmDataSize = HM_MESSAGE_PROTO_PAYLOAD
     const userDataLength = dataBin.byteLength
@@ -485,22 +555,19 @@ export class MessageBuilder extends EventBus {
 
         dataBin.copy(tailBuf, headerSize, offset, offset + tailSize)
         offset += tailSize
-        this.sendDataWithSession(
-          {
-            traceId,
-            spanId: spanId,
-            seqId: genSeqId(),
-            payload: tailBuf,
-            type,
-            opCode: MessagePayloadOpCode.Finished,
-            totalLength: userDataLength,
-            contentType,
-            dataType
-          },
-          {
-            messageType
-          }
-        )
+        this.sendDataWithSession({
+          traceId,
+          spanId: spanId,
+          seqId: genSeqId(),
+          payload: tailBuf,
+          type,
+          opCode: MessagePayloadOpCode.Finished,
+          totalLength: userDataLength,
+          contentType,
+          dataType,
+        }, {
+          messageType
+        })
 
         break
       }
@@ -508,22 +575,19 @@ export class MessageBuilder extends EventBus {
       dataBin.copy(_buf, headerSize, offset, offset + hmDataSize)
       offset += hmDataSize
 
-      this.sendDataWithSession(
-        {
-          traceId,
-          spanId: spanId,
-          seqId: genSeqId(),
-          payload: _buf,
-          type,
-          opCode: MessagePayloadOpCode.Continued,
-          totalLength: userDataLength,
-          contentType,
-          dataType
-        },
-        {
-          messageType
-        }
-      )
+      this.sendDataWithSession({
+        traceId,
+        spanId: spanId,
+        seqId: genSeqId(),
+        payload: _buf,
+        type,
+        opCode: MessagePayloadOpCode.Continued,
+        totalLength: userDataLength,
+        contentType,
+        dataType,
+      }, {
+        messageType
+      })
     }
 
     if (offset === userDataLength) {
@@ -534,7 +598,11 @@ export class MessageBuilder extends EventBus {
   }
 
   // 大数据的简单分包协议
-  sendSimpleProtocol({ dataBin }, { messageType = MessageType.Data } = {}) {
+  sendSimpleProtocol({
+    dataBin
+  }, {
+    messageType = MessageType.Data
+  } = {}) {
     const dataSize = this.chunkSize
     const headerSize = 0
     const userDataLength = dataBin.byteLength
@@ -552,14 +620,11 @@ export class MessageBuilder extends EventBus {
 
         dataBin.copy(tailBuf, headerSize, offset, offset + tailSize)
         offset += tailSize
-        this.sendSimpleData(
-          {
-            payload: tailBuf
-          },
-          {
-            messageType
-          }
-        )
+        this.sendSimpleData({
+          payload: tailBuf
+        }, {
+          messageType
+        })
 
         break
       }
@@ -567,14 +632,11 @@ export class MessageBuilder extends EventBus {
       dataBin.copy(_buf, headerSize, offset, offset + dataSize)
       offset += dataSize
 
-      this.sendSimpleData(
-        {
-          payload: _buf
-        },
-        {
-          messageType
-        }
-      )
+      this.sendSimpleData({
+        payload: _buf
+      }, {
+        messageType
+      })
     }
 
     if (offset === userDataLength) {
@@ -584,7 +646,13 @@ export class MessageBuilder extends EventBus {
     }
   }
 
-  sendJson({ requestId = 0, json, type = MessagePayloadType.Request, contentType, dataType }) {
+  sendJson({
+    requestId = 0,
+    json,
+    type = MessagePayloadType.Request,
+    contentType,
+    dataType
+  }) {
     const packageBin = json2buf(json)
     const traceId = requestId ? requestId : genTraceId()
 
@@ -597,7 +665,13 @@ export class MessageBuilder extends EventBus {
     })
   }
 
-  sendBuf({ requestId = 0, buf, type = MessagePayloadType.Request, contentType, dataType }) {
+  sendBuf({
+    requestId = 0,
+    buf,
+    type = MessagePayloadType.Request,
+    contentType,
+    dataType
+  }) {
     const traceId = requestId ? requestId : genTraceId()
 
     return this.sendHmProtocol({
@@ -611,17 +685,26 @@ export class MessageBuilder extends EventBus {
 
   sendLog(str) {
     const packageBuf = str2buf(str)
-    this.sendSimpleProtocol(
-      {
-        dataBin: packageBuf
-      },
-      {
-        messageType: MessageType.Log
-      }
-    )
+    this.sendSimpleProtocol({
+      dataBin: packageBuf
+    }, {
+      messageType: MessageType.Log
+    })
   }
 
-  sendDataWithSession({ traceId, spanId, seqId, payload, type, opCode, totalLength, contentType, dataType }, { messageType }) {
+  sendDataWithSession({
+    traceId,
+    spanId,
+    seqId,
+    payload,
+    type,
+    opCode,
+    totalLength,
+    contentType,
+    dataType
+  }, {
+    messageType
+  },) {
     const payloadBin = this.buildPayload({
       traceId,
       spanId,
@@ -634,21 +717,21 @@ export class MessageBuilder extends EventBus {
       dataType
     })
 
-    let data = this.isDevice
-      ? this.buildData(payloadBin, {
-        type: messageType
-      })
-      : payloadBin
+    let data = this.isDevice ? this.buildData(payloadBin, {
+      type: messageType
+    }) : payloadBin
 
     this.sendMsg(data)
   }
 
-  sendSimpleData({ payload }, { messageType }) {
-    let data = this.isDevice
-      ? this.buildData(payload, {
-        type: messageType
-      })
-      : payload
+  sendSimpleData({
+    payload
+  }, {
+    messageType
+  }) {
+    let data = this.isDevice ? this.buildData(payload, {
+      type: messageType
+    }) : payload
 
     this._logSend(data)
   }
@@ -833,7 +916,7 @@ export class MessageBuilder extends EventBus {
       extra1,
       extra2,
       extra3,
-      payload
+      payload,
     }
   }
 
@@ -846,13 +929,25 @@ export class MessageBuilder extends EventBus {
       this.appSidePort = data.port2
       logger.debug('appSidePort=>', data.port2)
       this.shakeTask.resolve()
-    } else if (data.flag === MessageFlag.App && data.type === MessageType.Data && data.port2 === this.appSidePort) {
+    } else if (
+      data.flag === MessageFlag.App &&
+      data.type === MessageType.Data &&
+      data.port2 === this.appSidePort
+    ) {
       this.emit('message', data.payload)
       this.emit('read', data)
-    } else if (data.flag === MessageFlag.App && data.type === MessageType.DataWithSystemTool && data.port2 === this.appSidePort) {
+    } else if (
+      data.flag === MessageFlag.App &&
+      data.type === MessageType.DataWithSystemTool &&
+      data.port2 === this.appSidePort
+    ) {
       this.emit('message', data.payload)
       this.emit('read', data)
-    } else if (data.flag === MessageFlag.App && data.type === MessageType.Log && data.port2 === this.appSidePort) {
+    } else if (
+      data.flag === MessageFlag.App &&
+      data.type === MessageType.Log &&
+      data.port2 === this.appSidePort
+    ) {
       this.emit('log', data.payload)
     } else {
       logger.error('error appSidePort=>%d data=>%j', this.appSidePort, data)
@@ -874,14 +969,16 @@ export class MessageBuilder extends EventBus {
           if (fullPayload.payloadType === MessagePayloadType.Request) {
             this.emit('request', {
               request: fullPayload,
-              response: ({ data }) => {
+              response: ({
+                data
+              }) => {
                 this.response({
                   requestId: fullPayload.traceId,
                   contentType: fullPayload.contentType,
                   dataType: fullPayload.dataType,
                   data
                 })
-              }
+              },
             })
           } else if (fullPayload.payloadType === MessagePayloadType.Response) {
             this.emit('response', fullPayload)
@@ -925,7 +1022,11 @@ export class MessageBuilder extends EventBus {
         defer.reject(error)
       }
 
-      const transact = ({ traceId, payload, dataType }) => {
+      const transact = ({
+        traceId,
+        payload,
+        dataType
+      }) => {
         this.errorIfBleDisconnect()
         DEBUG && logger.debug('traceId=>%d payload=>%s', traceId, payload.toString('hex'))
         if (traceId === requestId) {
@@ -933,16 +1034,16 @@ export class MessageBuilder extends EventBus {
           switch (dataType) {
             case MessagePayloadDataTypeOp.TEXT:
               result = buf2str(payload)
-              break
+              break;
             case MessagePayloadDataTypeOp.BIN:
               result = payload
-              break
+              break;
             case MessagePayloadDataTypeOp.JSON:
               result = buf2json(payload)
-              break
+              break;
             default: // text
               result = buf2str(payload)
-              break
+              break;
           }
           DEBUG && logger.debug('request id=>%d payload=>%j', requestId, data)
           DEBUG && logger.debug('response id=>%d payload=>%j', requestId, result)
@@ -996,7 +1097,7 @@ export class MessageBuilder extends EventBus {
         }),
         defer.promise.finally(() => {
           hasReturned = true
-        })
+        }),
       ])
     }
 
@@ -1022,23 +1123,27 @@ export class MessageBuilder extends EventBus {
       let timer1 = null
       let hasReturned = false
 
-      const transact = ({ traceId, payload, dataType }) => {
+      const transact = ({
+        traceId,
+        payload,
+        dataType
+      }) => {
         DEBUG && logger.debug('traceId=>%d payload=>%s', traceId, payload.toString('hex'))
         if (traceId === requestId) {
           let result
           switch (dataType) {
             case MessagePayloadDataTypeOp.TEXT:
               result = buf2str(payload)
-              break
+              break;
             case MessagePayloadDataTypeOp.BIN:
               result = payload
-              break
+              break;
             case MessagePayloadDataTypeOp.JSON:
               result = buf2json(payload)
-              break
+              break;
             default: // text
               result = buf2str(payload)
-              break
+              break;
           }
           DEBUG && logger.debug('request id=>%d payload=>%j', requestId, data)
           DEBUG && logger.debug('response id=>%d payload=>%j', requestId, result)
@@ -1097,14 +1202,19 @@ export class MessageBuilder extends EventBus {
    * 相应接口给当前请求
    * @param {obj} param0
    */
-  response({ requestId, contentType, dataType, data }) {
+  response({
+    requestId,
+    contentType,
+    dataType,
+    data
+  }) {
     if (MessagePayloadDataTypeOp.BIN === dataType) {
       this.sendBuf({
         requestId,
         buf: data,
         type: MessagePayloadType.Response,
         contentType,
-        dataType
+        dataType,
       })
     } else {
       this.sendJson({
@@ -1112,7 +1222,7 @@ export class MessageBuilder extends EventBus {
         json: data,
         type: MessagePayloadType.Response,
         contentType,
-        dataType
+        dataType,
       })
     }
   }

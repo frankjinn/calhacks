@@ -1,38 +1,15 @@
-import {
-  statSync,
-  writeFileSync as writeFile,
-  readFileSync as readFile
-} from '@zos/fs'
-
+import * as fs from './../shared/fs'
 import { TODO_FILE_NAME } from './constants'
 
 export function readFileSync() {
-  const fStat = statSync({
-    path: this.fileName
-  })
-  if (fStat) {
-    const resData = readFile({
-      path: TODO_FILE_NAME,
-      options: {
-        encoding: 'utf8'
-      }
-    })
-    return !resData ? [] : JSON.parse(resData)
-  } else {
-    return []
-  }
+  const resData = fs.readFileSync(TODO_FILE_NAME)
+  return !resData ? [] : JSON.parse(resData)
 }
 
 export function writeFileSync(data, merge = true) {
   let params = data
   if (merge) {
-    params = [...readFile(), ...data]
+    params = [...readFileSync(), ...data]
   }
-  writeFile({
-    path: TODO_FILE_NAME,
-    data: JSON.stringify(params),
-    options: {
-      encoding: 'utf8'
-    }
-  })
+  fs.writeFileSync(TODO_FILE_NAME, JSON.stringify(params))
 }

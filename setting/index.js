@@ -52,7 +52,7 @@ AppSettingsPage({
       },
       [
         TextInput({
-          label: gettext('New Deck'),
+          label: gettext('addTodo'),
           onChange: (val) => {
             this.addTodoList(val)
           },

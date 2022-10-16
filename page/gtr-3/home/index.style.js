@@ -1,10 +1,7 @@
-import * as hmUI from '@zos/ui'
-import { getText } from '@zos/i18n'
-import { getDeviceInfo } from '@zos/device'
-import { px } from '@zos/utils'
+import { gettext as getText } from 'i18n'
 
-
-export const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = getDeviceInfo()
+export const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } =
+  hmSetting.getDeviceInfo()
 
 export const TITLE_TEXT_STYLE = {
   text: getText('todoList'),

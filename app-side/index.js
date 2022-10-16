@@ -1,4 +1,4 @@
-import { MessageBuilder } from '../shared/message-side'
+import { MessageBuilder } from '../shared/message'
 import { DEFAULT_TODO_LIST } from './../utils/constants'
 const messageBuilder = new MessageBuilder()
 
