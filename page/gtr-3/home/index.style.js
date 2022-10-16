@@ -8,21 +8,22 @@ export const TITLE_TEXT_STYLE = {
   x: px(42),
   y: px(65),
   w: DEVICE_WIDTH - px(42 * 2),
-  h: px(50),
+  h: px(150),
   color: 0xffffff,
-  text_size: 36,
+  text_size: 90,
   align_h: hmUI.align.CENTER_H,
-  text_style: hmUI.text_style.WRAP,
+  text_style: hmUI.text_style.WRAP
 }
 
-export const ADD_BUTTON = {
+export const STUDY_BUTTON = {
   text: getText('study'),
-  x: px(30),
-  y: px(65),
-  w: px(120),
-  h: px(50),
+  x: px(150),
+  y: px(250),
+  w: px(190),
+  h: px(80),
   normal_color: 0xfc6950,
   press_color: 0xfeb4a8,
+  text_size: 35,
   radius: px(12)
 }
 

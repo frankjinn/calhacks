@@ -1,0 +1,48 @@
+[33mcommit c97be5bd2ef3395f89275665b39a0e80c7d29d09[m[33m ([m[1;36mHEAD -> [m[1;32mUI[m[33m)[m
+Merge: eab8dda dd651bb
+Author: Chaeyoung Im <icy2150@berkeley.edu>
+Date:   Sun Oct 16 00:10:34 2022 -0700
+
+    changed gitignore
+
+[33mcommit eab8dda5c4457ab98c6816c30877270dcecc5ab0[m
+Author: Chaeyoung Im <icy2150@berkeley.edu>
+Date:   Sun Oct 16 00:00:39 2022 -0700
+
+    watch change1
+
+[33mcommit dd651bbab46f10e682fd51b679acc9da19a34155[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Frank Jin <frank.jin@berkeley.edu>
+Date:   Sat Oct 15 23:53:16 2022 -0700
+
+    "Changed Default List"
+
+[33mcommit 5ba1ebc6f10abced363404277f9536998e9cfc21[m
+Author: Frank Jin <frank.jin@berkeley.edu>
+Date:   Sat Oct 15 23:43:01 2022 -0700
+
+    "rmv dist"
+
+[33mcommit 0e2e2a139610b39ca382da4adcc8db5d5880fbe9[m
+Author: Frank Jin <frank.jin@berkeley.edu>
+Date:   Sat Oct 15 23:37:24 2022 -0700
+
+    "Changed ADD TODO -> ADD DECK, and button to grey"
+
+[33mcommit 5fd798b0c4763621fd98c708a8550b2ff60d6a6d[m
+Author: Frank Jin <frank.jin@berkeley.edu>
+Date:   Sat Oct 15 22:48:39 2022 -0700
+
+    "updated to 1.0"
+
+[33mcommit a08871429f43d2c7504b30fbd6e201358cf1c84e[m
+Author: Frank Jin <frank.jin@berkeley.edu>
+Date:   Sat Oct 15 22:29:54 2022 -0700
+
+    "new deck"
+
+[33mcommit cc18f18166dfeb30860750e807c80d7d1381c66c[m
+Author: Frank Jin <frank.jin@berkeley.edu>
+Date:   Sat Oct 15 22:03:57 2022 -0700
+
+    initial commit
