@@ -1,11 +1,11 @@
 import { MessageBuilder } from '../shared/message'
-import { DEFAULT_TODO_LIST } from './../utils/constants'
+import { DEFAULT_DECK_LIST } from './../utils/constants'
 const messageBuilder = new MessageBuilder()
 
 function getTodoList() {
   return settings.settingsStorage.getItem('todoList')
     ? JSON.parse(settings.settingsStorage.getItem('todoList'))
-    : [...DEFAULT_TODO_LIST]
+    : [...DEFAULT_DECK_LIST]
 }
 AppSideService({
   onInit() {

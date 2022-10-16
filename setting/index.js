@@ -1,5 +1,5 @@
 import { gettext } from 'i18n'
-import { DEFAULT_TODO_LIST } from './../utils/constants'
+import { DEFAULT_DECK_LIST } from './../utils/constants'
 AppSettingsPage({
   state: {
     todoList: [],
@@ -30,7 +30,7 @@ AppSettingsPage({
         props.settingsStorage.getItem('todoList'),
       )
     } else {
-      this.state.todoList = [...DEFAULT_TODO_LIST]
+      this.state.todoList = [...DEFAULT_DECK_LIST]
     }
     console.log('todoList: ', this.state.todoList)
   },
