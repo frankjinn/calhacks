@@ -2,15 +2,19 @@ import { gettext } from 'i18n'
 import { DEFAULT_DECK_LIST } from './../utils/constants'
 AppSettingsPage({
   state: {
-    todoList: [],
+    todoList: [[]],
     props: {},
   },
   addTodoList(val) {
-    this.state.todoList = [...this.state.todoList, val]
+    this.state.todoList = [...this.state.todoList, [val, "fill in the definition!"]]
     this.setItem()
   },
-  editTodoList(val, index) {
-    this.state.todoList[index] = val
+  editWord(val, index) {
+    this.state.todoList[index][0] = val
+    this.setItem()
+  },
+  editDef(val, index) {
+    this.state.todoList[index][1] = val
     this.setItem()
   },
   deleteTodoList(index) {
@@ -21,6 +25,7 @@ AppSettingsPage({
   },
   setItem() {
     const newString = JSON.stringify(this.state.todoList)
+    console.log(newString)
     this.state.props.settingsStorage.setItem('todoList', newString)
   },
   setState(props) {
@@ -71,11 +76,52 @@ AppSettingsPage({
               borderRadius: '10px',
               display: 'flex',
               flexDirection: 'column',
+              textAlign: 'center',
               justifyContent: 'center',
               alignItems: 'center',
+              padding: '3px',
             },
           },
           [
+            View(
+              {
+                style: {
+                  fontSize: '16px',
+                  borderRadius: '10px',
+                  background: '#3f3f3f',
+                  marginTop: '10px',
+                  color: 'white',
+                  width: '50%',
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  padding: '4px',
+                },
+              },
+              [
+                TextInput({
+                  label: '',
+                  bold: true,
+                  value: item[0],
+                  subStyle: {
+                    color: '#ffffff',
+                    fontSize: '14px',
+                    padding: '5px',
+                  },
+                  maxLength: 200,
+                  onChange: (val) => {
+                    if (val.length > 0 && val.length <= 200) {
+                      this.editWord(val, index)
+                    } else {
+                      console.log("Word can't be empty or too long!")
+                    }
+                  },
+                }),
+              ],
+            ),
             View(
               {
                 style: {
@@ -84,37 +130,41 @@ AppSettingsPage({
                   flexDirection: 'column',
                   justfyContent: 'center',
                   alignItems: 'center',
-                  marginBottom: '5px',
+                  marginBottom: '10px',
+                  marginTop: '10px',
                 },
               },
               [
                 TextInput({
                   label: '',
                   bold: true,
-                  value: item,
+                  value: item[1],
                   subStyle: {
                     color: '#333',
                     fontSize: '14px',
+                    borderBottom: '1px solid #eaeaea',
                   },
                   maxLength: 200,
                   onChange: (val) => {
                     if (val.length > 0 && val.length <= 200) {
-                      this.editTodoList(val, index)
+                      this.editDef(val, index)
                     } else {
-                      console.log("todoList can't be empty or too long!")
+                      console.log("Definition can't be empty or too long!")
                     }
                   },
                 }),
               ],
             ),
             Button({
-              label: gettext('Go to Deck'),
+              label: gettext('Delete'),
               style: {
-                fontSize: '12px',
+                fontSize: '10px',
                 borderRadius: '20px',
-                background: '#3f3f3f',
+                background: '#D85E33',
                 color: 'white',
-                width: '50%',
+                width: '25%',
+                padding: '1px',
+                marginBottom: '10px'
               },
               onClick: () => {
                 this.deleteTodoList(index)

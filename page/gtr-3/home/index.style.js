@@ -26,6 +26,27 @@ export const ADD_BUTTON = {
   radius: px(12)
 }
 
+export const TAP_BUTTON = {
+  x: px(15),
+  y: px(120),
+  w: px(500),
+  h: px(500),
+  normal_color: 0xffffff,
+  press_color: 0xffffff,
+  radius: px(12),
+}
+
+export const CARD_DISPLAY = {
+  text: getText('flipped word'),
+  x: px(15),
+  y: px(120),
+  w: px(300),
+  h: px(300),
+  normal_color: 0x43529D,
+  press_color: 0x43529D,
+  radius: px(12),
+}
+
 export const TIPS_TEXT_STYLE = {
   text: getText('noData'),
   x: px(15),

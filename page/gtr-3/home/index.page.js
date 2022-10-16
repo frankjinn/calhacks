@@ -1,4 +1,4 @@
-import { TITLE_TEXT_STYLE, TIPS_TEXT_STYLE, SCROLL_LIST, ADD_BUTTON } from './index.style'
+import { TITLE_TEXT_STYLE, TIPS_TEXT_STYLE, SCROLL_LIST, ADD_BUTTON, TAP_BUTTON, CARD_DISPLAY} from './index.style'
 import { readFileSync, writeFileSync } from './../../../utils/fs'
 import { getScrollListDataConfig } from './../../../utils/index'
 
@@ -26,14 +26,28 @@ Page({
       })
     }
 
-    this.state.addButton = hmUI.createWidget(hmUI.widget.BUTTON, {
-      ...ADD_BUTTON,
-      click_func: () => {
-        this.addRandomTodoItem()
-      }
-    })
+    // this.state.addButton = hmUI.createWidget(hmUI.widget.BUTTON, {
+    //   ...ADD_BUTTON,
+    //   click_func: () => {
+    //     //this.addRandomTodoItem()
 
+    //   }
+    // })
+
+    const tap = hmUI.createWidget(hmUI.widget.TEXT, {
+      ...CARD_DISPLAY
+      })
+    tap.setProperty(hmUI.prop.VISIBLE, false)  
+
+    this.state.tapbutton = hmUI.createWidget(hmUI.widget.BUTTON, {
+        ...TAP_BUTTON,
+        click_func: () => {
+          tap.setProperty(hmUI,prop.VISIBLE, true)
+        }
+    })
+    
     this.createAndUpdateList()
+    
   },
   onDestroy() {
     logger.debug('page onDestroy invoked')
@@ -43,6 +57,7 @@ Page({
     messageBuilder.on('call', ({ payload: buf }) => {
       const data = messageBuilder.buf2Json(buf)
       const dataList = data.map((i) => ({ name: i }))
+      console.log(dataList)
       logger.log('call dataList', dataList)
       this.refreshAndUpdate(dataList)
     })
@@ -65,7 +80,7 @@ Page({
         method: 'ADD'
       })
       .then(({ result }) => {
-        this.state.dataList = result.map((d) => ({ name: d }))
+        const dataList = result.map((d) => ({ name: d }))
         this.createAndUpdateList()
       })
       .catch((res) => {})

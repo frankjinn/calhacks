@@ -1,5 +1,5 @@
 msgid "addDeck"
-msgstr "ADD DECK"
+msgstr "ADD WORD"
 
 msgid "delete"
 msgstr "DELETE"
