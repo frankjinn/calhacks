@@ -65,10 +65,14 @@ AppSettingsPage({
           {
             style: {
               borderBottom: '1px solid #eaeaea',
-              padding: '6px 0',
+              padding: '100px 0',
               marginBottom: '6px',
+              background: '#d3d3d3',
+              borderRadius: '10px',
               display: 'flex',
-              flexDirection: 'row',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
             },
           },
           [
@@ -77,9 +81,10 @@ AppSettingsPage({
                 style: {
                   flex: 1,
                   display: 'flex',
-                  flexDirection: 'row',
+                  flexDirection: 'column',
                   justfyContent: 'center',
                   alignItems: 'center',
+                  marginBottom: '5px',
                 },
               },
               [
@@ -103,12 +108,13 @@ AppSettingsPage({
               ],
             ),
             Button({
-              label: gettext('delete'),
+              label: gettext('Go to Deck'),
               style: {
                 fontSize: '12px',
-                borderRadius: '30px',
-                background: '#D85E33',
+                borderRadius: '20px',
+                background: '#3f3f3f',
                 color: 'white',
+                width: '50%',
               },
               onClick: () => {
                 this.deleteTodoList(index)

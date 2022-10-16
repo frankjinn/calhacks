@@ -99,7 +99,6 @@ Page({
       this.state.tipText && this.state.tipText.setProperty(hmUI.prop.VISIBLE, isTip)
       this.state.scrollList && this.state.scrollList.setProperty(hmUI.prop.VISIBLE, !isTip)
     } else {
-      // 占位刷新
       !this.state.refreshText &&
         (this.state.refreshText = hmUI.createWidget(hmUI.widget.TEXT, {
           ...TIPS_TEXT_STYLE,

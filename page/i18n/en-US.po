@@ -5,5 +5,5 @@ msgstr "Mem:re"
 msgid "noData"
 msgstr "No data, please add it on the phone"
 
-msgid "study"
-msgstr "Study"
+msgid "add"
+msgstr "Add"
