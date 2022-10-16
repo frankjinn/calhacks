@@ -4,7 +4,7 @@ export const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } =
   hmSetting.getDeviceInfo()
 
 export const TITLE_TEXT_STYLE = {
-  text: getText('todoList'),
+  text: getText('Mem:re'),
   x: px(42),
   y: px(65),
   w: DEVICE_WIDTH - px(42 * 2),
@@ -16,7 +16,7 @@ export const TITLE_TEXT_STYLE = {
 }
 
 export const ADD_BUTTON = {
-  text: getText('add'),
+  text: getText('study'),
   x: px(30),
   y: px(65),
   w: px(120),

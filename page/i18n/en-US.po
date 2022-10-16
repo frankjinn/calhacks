@@ -1,9 +1,9 @@
 
-msgid "todoList"
-msgstr "todo List"
+msgid "Mem:re"
+msgstr "Mem:re"
 
 msgid "noData"
 msgstr "No data, please add it on the phone"
 
-msgid "add"
-msgstr "Add"
+msgid "study"
+msgstr "Study"
